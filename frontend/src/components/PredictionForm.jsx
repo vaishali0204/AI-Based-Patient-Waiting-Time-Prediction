@@ -2,6 +2,10 @@
 import { useState } from 'react';
 import PredictionResult from './PredictionResult';
 
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL ||
+  'https://ai-based-patient-waiting-time-prediction.onrender.com';
+
 function PredictionForm() {
   const [patientType, setPatientType] = useState('1');
   const [queueCount, setQueueCount] = useState('');
@@ -49,7 +53,7 @@ function PredictionForm() {
     try {
       setLoading(true);
 
-      const response = await fetch('http://127.0.0.1:8000/predict', {
+      const response = await fetch(`${API_BASE_URL}/predict`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -67,7 +71,7 @@ function PredictionForm() {
     } catch (err) {
       setError(
         err.message === 'Failed to fetch'
-          ? 'Cannot connect to the backend. Please check that FastAPI is running.'
+          ? 'Unable to connect to the prediction server. Please try again.'
           : err.message
       );
     } finally {
@@ -77,7 +81,6 @@ function PredictionForm() {
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-
       <section className="rounded-lg border border-slate-200 bg-white p-6">
         <h2 className="text-lg font-semibold text-slate-800">
           Patient Details
@@ -88,7 +91,6 @@ function PredictionForm() {
         </p>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-5">
-
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-700">
               Patient Type
@@ -171,22 +173,22 @@ function PredictionForm() {
           >
             {loading ? 'Predicting...' : 'Predict Waiting Time'}
           </button>
-
         </form>
       </section>
 
       <section>
         {prediction !== null ? (
-         <PredictionResult
-  waitingTime={prediction}
-  patientType={patientType}
-/>
+          <PredictionResult
+            waitingTime={prediction}
+            patientType={patientType}
+          />
         ) : (
           <div className="flex h-full min-h-64 items-center justify-center rounded-lg border border-dashed border-slate-300 bg-white p-6 text-center">
             <div>
               <h3 className="font-medium text-slate-700">
                 Waiting Time Result
               </h3>
+
               <p className="mt-2 text-sm text-slate-500">
                 Enter patient details and submit the form to get a prediction.
               </p>
@@ -194,7 +196,6 @@ function PredictionForm() {
           </div>
         )}
       </section>
-
     </div>
   );
 }
